@@ -6,11 +6,12 @@ interface Props{
   activity:Activity|undefined;
   closeForm:()=>void;
   createOrEdit:(activity:Activity)=>void;
+  submitting:boolean;
 }
 
 
 
-export default function ActivityForm({activity:selectedActivity,closeForm,createOrEdit}:Props)
+export default function ActivityForm({activity:selectedActivity,submitting,closeForm,createOrEdit}:Props)
 {
   // Initialize the form state with either the selected activity or default empty values
   const initialState = selectedActivity ??
@@ -45,8 +46,8 @@ return(
       <Form.Input placeholder='Date' type='date' value={activity.date} name='date' onChange={handleInputChange}/>
       <Form.Input placeholder='City' value={activity.city} name='city' onChange={handleInputChange}/>
       <Form.Input placeholder='Venue'value={activity.venue} name='venue' onChange={handleInputChange}/>
-       <Button floated='right' positive type='submit' content='Submit'/>
-       <Button onClick={closeForm} floated='right' type='button' content='Cancle'/>
+       <Button  loading={submitting}floated='right' positive type='submit' content='Submit'/>
+       <Button  onClick={closeForm} floated='right' type='button' content='Cancle'/>
 
 
     </Form>

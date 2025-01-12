@@ -19,21 +19,23 @@ export default class ActivityStore {
 
   // Action: Load activities from the API and populate the `activities` array.
   // This method is asynchronous because it involves a network request.
-  loadActivities = async () => {
-    this.setLoadingInitial(true);
-    try {
-      // Fetch the list of activities from the API using the `agent` utility.
-      const activities = await agent.Activities.list();
-      activities.forEach((activity) => {
-        activity.date = activity.date.split("T")[0];
-        this.activities.push(activity);
-      });
+loadActivities = async () => {
+  this.setLoadingInitial(true);
+  try {
+    const activities = await agent.Activities.list();
+    runInAction(() => {
+      this.activities = activities.map((activity) => ({
+        ...activity,
+        date: activity.date.split("T")[0],
+      }));
+      console.log("Activities after loading:", this.activities); // Log here
       this.setLoadingInitial(false);
-    } catch (error) {
-      console.log(error);
-      this.setLoadingInitial(false);
-    }
-  };
+    });
+  } catch (error) {
+    console.error("Error loading activities:", error);
+    this.setLoadingInitial(false);
+  }
+};
 
   setLoadingInitial = (state: boolean) => {
     this.loadingInitial = state;
@@ -101,4 +103,21 @@ export default class ActivityStore {
       })
     }
   };
+  deleteActivity = async (id:string)=>
+  {
+    this.loading=true;
+     try{
+      await agent.Activities.delete(id);
+      runInAction(() => {
+        this.activities = [...this.activities.filter((a) => a.id !== id)];
+        if(this.selectedActivity?.id===id) this.cancleSelectedActivity();
+        this.loading=false;
+      })
+     }
+     catch(error )
+     {
+      console.log(error);
+
+     }
+  }
 }

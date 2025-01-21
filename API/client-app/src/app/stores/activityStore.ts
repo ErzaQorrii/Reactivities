@@ -8,7 +8,7 @@ export default class ActivityStore {
   activityRegistry = new Map<string, Activity>();
   editMode = false;
   loading = false;
-  loadingInitial = true;
+  loadingInitial = false;
 
   // The constructor runs when an instance of `ActivityStore` is created.
   // `makeAutoObservable` automatically makes all properties observable

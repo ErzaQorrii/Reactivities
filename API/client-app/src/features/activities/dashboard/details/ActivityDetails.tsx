@@ -2,13 +2,14 @@ import React from "react";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardMeta, Icon,Image } from "semantic-ui-react";
 import { useStore } from "../../../../app/stores/store";
 import LoadingComponent from "../../../../layout/LoadingComponent";
+import { observer } from "mobx-react-lite";
 
 
 
-export default function ActivityDetails()
+export default observer( function ActivityDetails()
 {
  const {activityStore}= useStore();
- const{selectedActivity:activity,cancleSelectedActivity,openForm}= activityStore;
+ const{selectedActivity:activity,loadActivity,loadingInitial}= activityStore;
 
  if(!activity) return <LoadingComponent/>;
  return(
@@ -25,11 +26,11 @@ export default function ActivityDetails()
   </CardContent>
   <CardContent extra>
     <Button.Group widths='2'>
-      <Button onClick={()=> openForm(activity.id)} basic color='blue' content='Edit'/>
-      <Button onClick={cancleSelectedActivity} basic color='grey' content='Cancle'/>
+      <Button  basic color='blue' content='Edit'/>
+      <Button  basic color='grey' content='Cancle'/>
 
     </Button.Group>
   </CardContent>
 </Card>
  )
-}
+})

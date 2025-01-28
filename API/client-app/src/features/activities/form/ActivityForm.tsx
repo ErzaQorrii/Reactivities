@@ -2,11 +2,13 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import { Button, Form, Segment } from "semantic-ui-react";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Activity } from "../../../app/models/activity";
 import LoadingComponent from "../../../layout/LoadingComponent";
+import { v4 as uuid } from "uuid";
 
 export default observer(function ActivityForm() {
+  const navigate = useNavigate();
   const { activityStore } = useStore();
   const {
     selectedActivity,
@@ -17,8 +19,8 @@ export default observer(function ActivityForm() {
     loadingInitial,
   } = activityStore;
 
-  const{id}=useParams();
-  const[activity,setActivity]=useState<Activity>({
+  const { id } = useParams();
+  const [activity, setActivity] = useState<Activity>({
     id: "",
     title: "",
     category: "",
@@ -27,14 +29,21 @@ export default observer(function ActivityForm() {
     city: "",
     venue: "",
   });
-  useEffect(()=>
-  {
-    if(id) loadActivity(id).then(activity=>setActivity(activity!))
-  },[id,loadActivity])
-;
+  useEffect(() => {
+    if (id) loadActivity(id).then((activity) => setActivity(activity!));
+  }, [id, loadActivity]);
   // Function to handle form submission
   function handleSubmit() {
-    activity.id ? updateActivity(activity) : createActivity(activity);
+    if (!activity.id) {
+      activity.id = uuid();
+      createActivity(activity).then(() =>
+        navigate(`/activities/${activity.id}`)
+      );
+    } else {
+      updateActivity(activity).then(() =>
+        navigate(`/activities/${activity.id}`)
+      );
+    }
   }
   function handleInputChange(
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -43,7 +52,7 @@ export default observer(function ActivityForm() {
     // Update the activity state dynamically based on the input's name attribute
     setActivity({ ...activity, [name]: value });
   }
-  if(loadingInitial) return <LoadingComponent content="Loading activity..."/>
+  if (loadingInitial) return <LoadingComponent content="Loading activity..." />;
 
   return (
     <Segment clearing>
